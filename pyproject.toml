@@ -23,4 +23,3 @@ ewma = "ewma.__main__:main"
 
 [tool.poetry]
 packages = [{ include = "ewma", from = "python" }]
-include = ["python/ewma/*.so", "python/ewma/*.dll", "python/ewma/*.dylib"]

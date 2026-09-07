@@ -5,9 +5,24 @@ Python-аналог C++ CLI: перебор сетки (lambda, L) и вывод
 import argparse
 import sys
 import os
+import contextlib
 from typing import List, Optional, Tuple
 
 from . import Ewma, Config, Result
+
+
+@contextlib.contextmanager
+def _silent_stdout():
+    """Глушит stdout на уровне fd (ловит и C++ printf/ProgressBar)."""
+    saved = os.dup(1)
+    null_fd = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(null_fd, 1)
+    try:
+        yield
+    finally:
+        os.dup2(saved, 1)
+        os.close(saved)
+        os.close(null_fd)
 
 
 def _parse_range(args: Optional[List[str]]) -> Optional[Tuple[float, float, float]]:
@@ -92,7 +107,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     else:
         ewma = Ewma(config)
 
-    results = ewma.run()
+    if args.json:
+        with _silent_stdout():
+            results = ewma.run()
+    else:
+        results = ewma.run()
 
     if not results:
         sys.stderr.write("Нет результатов.\n")
@@ -129,9 +148,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if not args.keep_files:
         cwd = os.getcwd()
-        for fname in ["ewma_arl_calculation_temp.csv", "ewma_arl_checkpoint.txt",
-                      "ewma_arl_results_final.csv", "ewma_best_arl_pairs.csv",
-                      "ewma_arl_calculation.log", "ewma_errors.log"]:
+        for fname in ["arl_calculation_temp.csv", "arl_checkpoint.txt",
+                      "arl_results_final.csv", "best_arl_pairs.csv",
+                      "arl_calculation.log", "errors.log"]:
             path = os.path.join(cwd, fname)
             if os.path.exists(path):
                 try:
