@@ -235,6 +235,30 @@ cp lib/libewma.so /usr/local/lib/
 pip install .
 ```
 
+**Через Poetry (альтернатива pip):**
+
+```bash
+# 1. Собрать shared library
+make lib
+
+# 2. Установить пакет (Poetry создаст venv .venv и запишет poetry.lock)
+poetry install
+
+# 3. Запуск консольной команды / скриптов
+poetry run ewma --help
+poetry run python -c "from ewma import Ewma, Config; e = Ewma(Config(simulations=1000, n=14)); print(e.calculate_arl(0.10, 2.667))"
+```
+
+Poetry собирает пакет через backend `poetry-core` (см. `pyproject.toml`), поэтому обычный `pip install .` тоже продолжает работать. При установке в другой проект через Poetry:
+
+```bash
+# В каталоге проекта ewma-optimizer:
+poetry install
+
+# В другом проекте, зависимом от ewma-optimizer:
+poetry add /path/to/ewma-optimizer
+```
+
 **Windows (MSYS2 / MinGW):**
 
 ```bash
@@ -269,6 +293,7 @@ pip install -e .
 ```bash
 # В каталоге проекта ewma-optimizer:
 pip install -e .
+# или для Poetry: poetry install
 
 # В другом проекте:
 pip install /path/to/ewma-optimizer
@@ -381,6 +406,26 @@ ewma2 = Ewma(config2)
 best2 = ewma2.best_pair()
 print(f"Уточнение: lambda={best2.lambda_:.3f}, L={best2.L:.3f}, ARL={best2.ARL:.2f}")
 ```
+
+### Командная строка (`python -m ewma`)
+
+Пакет предоставляет CLI-обёртку (аналог C++ `bin/ewma`), устанавливаемую как консольная команда `ewma`:
+
+```bash
+# Через python -m (после pip install . или -e .)
+python -m ewma --simulations 1000 --n 10 \
+    --lambda_start 0.05 0.20 0.05 --L_start 2.4 3.0 0.05
+
+# Или как консольная команда после установки
+ewma --chart SR --simulations 1000 \
+    --lambda_start 0.05 0.20 0.05 --L_start 2.4 4.0 0.1 --json
+```
+
+Основные опции: `--chart SN|SR`, `--simulations N`, `--n N`, `--max_iter N`,
+`--target_ARL X`, `--cores N`, `--tolerance X`, `--top_n N`,
+`--lambda_start S E [step]`, `--L_start S E [step]`, `--config FILE` (JSON-конфиг,
+опции CLI переопределяют его), `--json` (вывод результата как JSON),
+`--keep-files` (не удалять CSV/log после запуска). Полный список: `ewma --help`.
 
 ### Make-цели для Python
 
