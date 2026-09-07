@@ -1,0 +1,21 @@
+{
+    "simulations": 5000,
+    "n": 14,
+    "max_iter": 5000,
+    "target_ARL": 370.0,
+    "n_cores": 0,
+    "checkpoint_interval": 5,
+    "top_n": 10,
+    "tolerance": -1.0,
+    "update_interval": 5,
+    "chart_type": "SN",
+    "lambda_values": [0.05, 0.10, 0.15, 0.20],
+    "L_values": [2.4, 2.45, 2.5, 2.55, 2.6, 2.65, 2.7, 2.75, 2.8, 2.85, 2.9, 2.95, 3.0],
+    "temp_file": "arl_calculation_temp.csv",
+    "checkpoint_file": "arl_checkpoint.txt",
+    "final_file": "arl_results_final.csv",
+    "best_file": "best_arl_pairs.csv",
+    "log_file": "arl_calculation.log",
+    "error_file": "errors.log",
+    "resume": false
+}
